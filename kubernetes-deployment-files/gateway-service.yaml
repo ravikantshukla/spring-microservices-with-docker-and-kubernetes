@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-service
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+        - name: gateway-service
+          image: ravikantshukla/gateway-service
+          ports:
+            - containerPort: 8060
+          env:
+            - name: EMPLOYEE_URL
+              value: http://employee-service:8091/eureka
+            - name: DEPARTMENT_URL
+              value: http://department-service:8092/eureka
+            - name: ORGANIZATION_URL
+              value: http://organization-service:8093/eureka
+            - name: REGISTRY_URL
+              value: http://discovery-service:8061/eureka
+            - name: CONFIG_URL
+              value: http://config-service:8088
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: gateway-service
+  ports:
+    - port: 8060
+      targetPort: 8060

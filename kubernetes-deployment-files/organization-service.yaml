@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: organization-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: organization-service
+  template:
+    metadata:
+      labels:
+        app: organization-service
+    spec:
+      containers:
+        - name: organization-service
+          image: ravikantshukla/organization-service
+          ports:
+            - containerPort: 8093
+          env:
+            - name: REGISTRY_URL
+              value: http://discovery-service:8061/eureka
+            - name: CONFIG_URL
+              value: http://config-service:8088
+          imagePullPolicy: Always
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: organization-service
+spec:
+  selector:
+    app: organization-service
+  ports:
+    - port: 8093
+      targetPort: 8093
