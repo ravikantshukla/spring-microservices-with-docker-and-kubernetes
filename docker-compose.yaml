@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  config-service:
+    image: 'ravikantshukla/config-server'
+    ports:
+    - "8088:8088"
+    container_name: config-service
+
+  discovery-service:
+    image: 'ravikantshukla/discovery-server'
+    container_name: discovery-service
+    ports:
+      - "8061:8061"
+    depends_on:
+      - config-service
+
+
+  gateway-service:
+    image: 'ravikantshukla/gateway-service'
+    container_name: gateway-service
+    ports:
+    - "8060:8060"
+    depends_on:
+      - config-service
+      - discovery-service
+
+
+  employee-service:
+    image: 'ravikantshukla/employee-service'
+    container_name: employee-service
+    depends_on:
+      - discovery-service
+
+  organization-service:
+    image: 'ravikantshukla/organization-service'
+    container_name: organization-service
+    depends_on:
+      - discovery-service
+
+  department-service:
+    image: 'ravikantshukla/department-service'
+    container_name: department-service
+    depends_on:
+      - discovery-service
